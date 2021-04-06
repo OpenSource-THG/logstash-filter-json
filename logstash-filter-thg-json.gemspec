@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
 
-  s.name            = 'logstash-filter-json'
+  s.name            = 'logstash-filter-thg-json'
   s.version         = '3.1.0'
   s.licenses        = ['Apache License (2.0)']
   s.summary         = "Parses JSON events"

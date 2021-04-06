@@ -14,14 +14,16 @@ END - GENERATED VARIABLES, DO NOT EDIT!
 
 [id="plugins-{type}s-{plugin}"]
 
-=== JSON filter plugin
+=== THG JSON filter plugin
 
 include::{include_path}/plugin_header.asciidoc[]
 
 ==== Description
 
-This is a JSON parsing filter. It takes an existing field which contains JSON and
-expands it into an actual data structure within the Logstash event.
+This is a special JSON parsing filter forked from the original JSON filter.
+It takes an existing field which contains JSON and expands it into an
+actual data structure within the Logstash event. It also has the extended
+ability to replace characters in the keys of the object with other characters.
 
 By default, it will place the parsed JSON in the root (top level) of the Logstash event, but this
 filter can be configured to place the JSON into any arbitrary event field, using the
@@ -48,6 +50,7 @@ This plugin supports the following configuration options plus the <<plugins-{typ
 | <<plugins-{type}s-{plugin}-source>> |<<string,string>>|Yes
 | <<plugins-{type}s-{plugin}-tag_on_failure>> |<<array,array>>|No
 | <<plugins-{type}s-{plugin}-target>> |<<string,string>>|No
+| <<plugins-{type}s-{plugin}-key_replacements>> |<<hash,hash>>|No
 |=======================================================================
 
 Also see <<plugins-{type}s-{plugin}-common-options>> for a list of options supported by all
@@ -115,6 +118,29 @@ data structure in the `target` field.
 
 NOTE: if the `target` field already exists, it will be overwritten!
 
+[id="plugins-{type}s-{plugin}-key_replacements"]
+===== `key_replacements` 
+
+  * Value type is <<hash,hash>>
+  * There is no default value for this setting.
+
+Define the characters to be replaced in the keys and what they should be
+replace with
+
+For example, if you want to replace the square brackets with round brackets,
+use the following:
+[source,ruby]
+    filter {
+      json {
+        target => "doc"
+        key_replacements => {
+          "[" => "("
+          "]" => ")"
+        }
+      }
+    }
+
+This is to get round limitations of Logstash not being able to use square brackets in the keys of objects.
 
 
 [id="plugins-{type}s-{plugin}-common-options"]
