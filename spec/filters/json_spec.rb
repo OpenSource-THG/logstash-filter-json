@@ -36,10 +36,35 @@ describe LogStash::Filters::Json do
       }
     CONFIG
 
-    sample '{ "hello": "world", "list": [ 1, 2, 3 ], "hash": { "k": "v" } }' do
+    sample '{ "hello": "world", "list": [ 1, 2, 3 ], "hash": { "k": "v" }, "badMap[123]": "stock[asfa] asfad[]"}' do
       insist { subject.get("data")["hello"] } == "world"
       insist { subject.get("data")["list" ].to_a } == [1,2,3] # to_a for JRuby + JrJacksom which creates Java ArrayList
       insist { subject.get("data")["hash"] } == { "k" => "v" }
+      insist { subject.get("data")["badMap[123]"] } == "stock[asfa] asfad[]"
+    end
+  end
+
+  describe "replace specific characters in the keys of items" do
+    config <<-CONFIG
+      filter {
+        json {
+          # Parse message as JSON, store the results in the 'data' field'
+          source => "message"
+          target => "data"
+          key_replacements => {
+            "[" => "("
+            "]" => ")"
+          }
+        }
+      }
+    CONFIG
+
+    sample '{ "hello": "world", "list": [ 1, 2, 3 ], "hash": { "k": "v" }, "badMap[123]": "IStillHaveThese[]", "worstMap[321]": {"small[1]": 123, "large[(2)]": "123[]"}}' do
+      insist { subject.get("data")["hello"] } == "world"
+      insist { subject.get("data")["list" ].to_a } == [1,2,3] # to_a for JRuby + JrJacksom which creates Java ArrayList
+      insist { subject.get("data")["hash"] } == { "k" => "v" }
+      insist { subject.get("data")["badMap(123)"] } == "IStillHaveThese[]"
+      insist { subject.get("data")["worstMap(321)"] } == { "small(1)" => 123, "large((2))" => "123[]" }
     end
   end
 
@@ -61,7 +86,7 @@ describe LogStash::Filters::Json do
     end
   end
 
-  logstash_version = Gem::Version.create(LOGSTASH_CORE_VERSION)
+  logstash_version = Gem::Version.create(LOGSTASH_VERSION)
 
   if (Gem::Requirement.create('>= 7.0').satisfied_by?(logstash_version) ||
      (Gem::Requirement.create('~> 6.4').satisfied_by?(logstash_version) && LogStash::SETTINGS.get('config.field_reference.parser') == 'STRICT'))

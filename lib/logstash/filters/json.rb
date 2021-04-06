@@ -55,6 +55,10 @@ class LogStash::Filters::Json < LogStash::Filters::Base
   # NOTE: if the `target` field already exists, it will be overwritten!
   config :target, :validate => :string
 
+  # Allows the user to provide a hash of characters to replacements
+  # which will be applied to keys within the event body
+  config :key_replacements, :validate => :hash, :default => {}
+
   # Append values to the `tags` field when there has been no
   # successful match
   config :tag_on_failure, :validate => :array, :default => ["_jsonparsefailure"]
@@ -80,6 +84,10 @@ class LogStash::Filters::Json < LogStash::Filters::Base
         @logger.warn("Error parsing json", :source => @source, :raw => source, :exception => e)
       end
       return
+    end
+
+    if @key_replacements.size() > 0
+      _replace_key_characters(parsed, @key_replacements)
     end
 
     if @target
@@ -130,5 +138,14 @@ class LogStash::Filters::Json < LogStash::Filters::Base
 
   def _do_tag_on_failure(event)
     @tag_on_failure.each { |tag| event.tag(tag) }
+  end
+
+  def _replace_key_characters(parsed, replacements)
+    parsed.transform_keys!{|k| k.gsub(Regexp.union(replacements.keys), replacements)}  
+    parsed.each do |k, v|
+      if v.is_a?(Hash)
+        _replace_key_characters(v, replacements)
+      end
+    end
   end
 end
