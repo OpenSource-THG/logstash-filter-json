@@ -1,12 +1,11 @@
 Gem::Specification.new do |s|
 
   s.name            = 'logstash-filter-thg-json'
-  s.version         = '3.1.0'
+  s.version         = '0.0.1'
   s.licenses        = ['Apache License (2.0)']
-  s.summary         = "Parses JSON events"
+  s.summary         = "Parses JSON events and replaces characters in keys"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
-  s.authors         = ["Elastic"]
-  s.email           = 'info@elastic.co'
+  s.authors         = ["Josh Blease"]
   s.homepage        = "http://www.elastic.co/guide/en/logstash/current/index.html"
   s.require_paths = ["lib"]
 
