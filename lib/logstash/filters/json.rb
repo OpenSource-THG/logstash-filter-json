@@ -141,9 +141,13 @@ class LogStash::Filters::Json < LogStash::Filters::Base
   end
 
   def _replace_key_characters(parsed, replacements)
-    parsed.transform_keys!{|k| k.gsub(Regexp.union(replacements.keys), replacements)}  
-    parsed.each do |k, v|
-      if v.is_a?(Hash)
+    if parsed.is_a?(Hash)
+      parsed.transform_keys!{|k| k.gsub(Regexp.union(replacements.keys), replacements)}  
+      parsed.each do |k, v|
+        _replace_key_characters(v, replacements)
+      end
+    elsif parsed.is_a?(Array)
+      parsed.each do |v|
         _replace_key_characters(v, replacements)
       end
     end

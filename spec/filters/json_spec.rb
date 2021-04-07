@@ -44,7 +44,31 @@ describe LogStash::Filters::Json do
     end
   end
 
-  describe "replace specific characters in the keys of items" do
+  describe "replace specific characters in the keys of items when processing a hash" do
+    config <<-CONFIG
+      filter {
+        json {
+          # Parse message as JSON, store the results in the 'data' field'
+          source => "message"
+          target => "data"
+          key_replacements => {
+            "[" => "("
+            "]" => ")"
+          }
+        }
+      }
+    CONFIG
+
+    sample '[{ "hello": "world", "list": [ 1, 2, 3 ], "hash": { "k": "v" }, "badMap[123]": "IStillHaveThese[]", "worstMap[321]": {"small[1]": 123, "large[(2)]": "123[]"}}]' do
+      insist { subject.get("data")[0]["hello"] } == "world"
+      insist { subject.get("data")[0]["list" ].to_a } == [1,2,3] # to_a for JRuby + JrJacksom which creates Java ArrayList
+      insist { subject.get("data")[0]["hash"] } == { "k" => "v" }
+      insist { subject.get("data")[0]["badMap(123)"] } == "IStillHaveThese[]"
+      insist { subject.get("data")[0]["worstMap(321)"] } == { "small(1)" => 123, "large((2))" => "123[]" }
+    end
+  end
+
+  describe "replace specific characters in the keys of items when processing an array" do
     config <<-CONFIG
       filter {
         json {
