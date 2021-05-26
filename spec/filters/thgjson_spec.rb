@@ -6,12 +6,12 @@ require "logstash/filters/json"
 require "logstash/timestamp"
 require 'rubygems'
 
-describe LogStash::Filters::Json do
+describe LogStash::Filters::ThgJson do
 
   describe "parse message into the event" do
     config <<-CONFIG
       filter {
-        json {
+        thgjson {
           # Parse message as JSON
           source => "message"
         }
@@ -28,7 +28,7 @@ describe LogStash::Filters::Json do
   describe "parse message into a target field" do
     config <<-CONFIG
       filter {
-        json {
+        thgjson {
           # Parse message as JSON, store the results in the 'data' field'
           source => "message"
           target => "data"
@@ -47,7 +47,7 @@ describe LogStash::Filters::Json do
   describe "replace specific characters in the keys of items when processing a hash" do
     config <<-CONFIG
       filter {
-        json {
+        thgjson {
           # Parse message as JSON, store the results in the 'data' field'
           source => "message"
           target => "data"
@@ -71,7 +71,7 @@ describe LogStash::Filters::Json do
   describe "replace specific characters in the keys of items when processing an array" do
     config <<-CONFIG
       filter {
-        json {
+        thgjson {
           # Parse message as JSON, store the results in the 'data' field'
           source => "message"
           target => "data"
@@ -95,7 +95,7 @@ describe LogStash::Filters::Json do
   describe "tag invalid json" do
     config <<-CONFIG
       filter {
-        json {
+        thgjson {
           # Parse message as JSON, store the results in the 'data' field'
           source => "message"
           target => "data"
@@ -117,7 +117,7 @@ describe LogStash::Filters::Json do
     describe "unsupported field name using `target`" do
       config <<-CONFIG
         filter {
-          json {
+          thgjson {
             # Parse message as JSON, store the results in the 'data' field'
             source => "message"
             target => "data"
@@ -139,7 +139,7 @@ describe LogStash::Filters::Json do
     describe "unsupported field name without target" do
       config <<-CONFIG
         filter {
-          json {
+          thgjson {
             # Parse message as JSON, store the results in the 'data' field'
             source => "message"
             tag_on_failure => ["_jsonparsefailure","_custom_failure_tag"]
@@ -159,7 +159,7 @@ describe LogStash::Filters::Json do
   describe "fixing @timestamp (#pull 733)" do
     config <<-CONFIG
       filter {
-        json {
+        thgjson {
           source => "message"
         }
       }
@@ -174,7 +174,7 @@ describe LogStash::Filters::Json do
   describe "source == target" do
     config <<-CONFIG
       filter {
-        json {
+        thgjson {
           source => "example"
           target => "example"
         }
@@ -190,7 +190,7 @@ describe LogStash::Filters::Json do
   describe "parse JSON array into target field" do
     config <<-CONFIG
       filter {
-        json {
+        thgjson {
           # Parse message as JSON, store the results in the 'data' field'
           source => "message"
           target => "data"
@@ -206,7 +206,7 @@ describe LogStash::Filters::Json do
 
   context "using message field source" do
 
-    subject(:filter) {  LogStash::Filters::Json.new(config)  }
+    subject(:filter) {  LogStash::Filters::ThgJson.new(config)  }
 
     let(:config) { {"source" => "message"} }
     let(:event) { LogStash::Event.new("message" => message) }
@@ -274,7 +274,7 @@ describe LogStash::Filters::Json do
   end
 
   describe "parse mixture of json an non-json content (skip_on_invalid_json)" do
-    subject(:filter) {  LogStash::Filters::Json.new(config)  }
+    subject(:filter) {  LogStash::Filters::ThgJson.new(config)  }
 
     let(:config) { {"source" => "message", "remove_field" => ["message"], "skip_on_invalid_json" => skip_on_invalid_json} }
     let(:event) { LogStash::Event.new("message" => message) }

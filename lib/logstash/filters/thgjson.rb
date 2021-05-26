@@ -19,9 +19,9 @@ require "logstash/timestamp"
 # If the parsed data contains a `@timestamp` field, we will try to use it for the event's `@timestamp`, if the
 # parsing fails, the field will be renamed to `_@timestamp` and the event will be tagged with a
 # `_timestampparsefailure`.
-class LogStash::Filters::Json < LogStash::Filters::Base
+class LogStash::Filters::ThgJson < LogStash::Filters::Base
 
-  config_name "json"
+  config_name "thgjson"
 
   # The configuration for the JSON filter:
   # [source,ruby]
@@ -30,7 +30,7 @@ class LogStash::Filters::Json < LogStash::Filters::Base
   # For example, if you have JSON data in the `message` field:
   # [source,ruby]
   #     filter {
-  #       json {
+  #       thgjson {
   #         source => "message"
   #       }
   #     }
@@ -44,7 +44,7 @@ class LogStash::Filters::Json < LogStash::Filters::Base
   # For example, if you want the data to be put in the `doc` field:
   # [source,ruby]
   #     filter {
-  #       json {
+  #       thgjson {
   #         target => "doc"
   #       }
   #     }
@@ -71,7 +71,7 @@ class LogStash::Filters::Json < LogStash::Filters::Base
   end
 
   def filter(event)
-    @logger.debug? && @logger.debug("Running json filter", :event => event)
+    @logger.debug? && @logger.debug("Running thgjson filter", :event => event)
 
     source = event.get(@source)
     return unless source
@@ -128,11 +128,11 @@ class LogStash::Filters::Json < LogStash::Filters::Base
 
     filter_matched(event)
 
-    @logger.debug? && @logger.debug("Event after json filter", :event => event)
+    @logger.debug? && @logger.debug("Event after thgjson filter", :event => event)
   rescue => ex
     meta = { :exception => ex.message, :source => @source, :raw => source}
     meta[:backtrace] = ex.backtrace if logger.debug?
-    logger.warn('Exception caught in json filter', meta)
+    logger.warn('Exception caught in thgjson filter', meta)
     _do_tag_on_failure(event)
   end
 

@@ -80,7 +80,7 @@ The configuration for the JSON filter:
 For example, if you have JSON data in the `message` field:
 [source,ruby]
     filter {
-      json {
+      thgjson {
         source => "message"
       }
     }
@@ -108,7 +108,7 @@ omitted, the JSON data will be stored at the root (top level) of the event.
 For example, if you want the data to be put in the `doc` field:
 [source,ruby]
     filter {
-      json {
+      thgjson {
         target => "doc"
       }
     }
@@ -131,7 +131,7 @@ For example, if you want to replace the square brackets with round brackets,
 use the following:
 [source,ruby]
     filter {
-      json {
+      thgjson {
         target => "doc"
         key_replacements => {
           "[" => "("
